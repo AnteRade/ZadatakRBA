@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Management</title>
+</head>
+<body>
+    <h1>Client Management</h1>
+
+    <h2>Add Client</h2>
+    <form id="addClientForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" required><br><br>
+
+        <label for="oib">OIB:</label>
+        <input type="text" id="oib" name="oib" required><br><br>
+
+        <label for="status">Card Status:</label>
+        <input type="text" id="status" name="status" required><br><br>
+
+        <button type="submit">Add Client</button>
+    </form>
+
+    <h2>Search Client by OIB</h2>
+    <form id="searchClientForm">
+        <label for="searchOib">OIB:</label>
+        <input type="text" id="searchOib" name="searchOib" required><br><br>
+        <button type="submit">Search Client</button>
+    </form>
+
+    <h2>Delete Client by OIB</h2>
+    <form id="deleteClientForm">
+        <label for="deleteOib">OIB:</label>
+        <input type="text" id="deleteOib" name="deleteOib" required><br><br>
+        <button type="submit">Delete Client</button>
+    </form>
+
+    <h2>Client Data</h2>
+    <pre id="clientData"></pre>
+
+    <script>
+
+        document.getElementById('addClientForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const surname = document.getElementById('surname').value;
+            const oib = document.getElementById('oib').value;
+            const status = document.getElementById('status').value;
+
+            fetch('/clients/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, surname, oib, cardStatus: status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Client added successfully!');
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('searchClientForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const oib = document.getElementById('searchOib').value;
+
+            fetch(`/clients/search/${oib}`, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('clientData').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('deleteClientForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const oib = document.getElementById('deleteOib').value;
+
+            fetch(`/clients/delete/${oib}`, { method: 'DELETE' })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
